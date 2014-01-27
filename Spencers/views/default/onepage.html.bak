@@ -1,0 +1,28 @@
+{{extend 'layout.html'}}
+<h1>Welcome to Spencers Retail</h1>
+<table>
+<tr>
+	<td>{{=A('CUSTOMERS', _href=URL('customers'))}}</td>
+    
+</tr>
+<tr>
+	<td>{{=A('PRODUCTS', _href=URL('products'))}}</td>
+    
+</tr>
+<tr>
+	<td>{{=A('DEALERS', _href=URL('dealers'))}}</td>
+
+</tr>
+<tr>
+    <td>
+        {{=A('BILLING HOME', _href=URL('bills'))}}
+    </td>
+</tr>
+{{if auth.has_membership('admin'):}}
+<tr>
+    <td>
+        {{=A('Customer Feedback', _href=URL('view_feedback'))}}
+    </td>
+</tr>
+{{pass}}
+</table>

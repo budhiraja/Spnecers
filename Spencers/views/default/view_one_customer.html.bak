@@ -1,0 +1,59 @@
+{{extend 'layout.html'}}
+<h1>{{=customer.cust_name}} </h1>
+<table>
+    <tr>
+        <td>
+             <b>Total Amount :</b>
+            {{=customer_total}}
+        </td>
+    </tr>
+        <tr>
+
+            <td>
+                <b>Mobile Number:</b>
+                {{=customer.mobile}}
+            </td>
+        <td>
+            <b>Email: </b>
+            {{=customer.email}}
+        </td>
+    </tr>
+</table>
+<b> Bills Related: </b>
+<table>
+    <tr>
+        <td>
+            <b>
+                Bill ID
+            </b>
+        </td>
+         <td>
+            <b>
+                Total
+            </b>
+        </td>
+         <td>
+            <b>
+                Net Total
+            </b>
+        </td>
+    </tr>
+    {{for i in bills:}}
+    <tr>
+        <td>
+            {{=A(i.id, _href=URL('show_bill',args=i.id))}}
+        </td>
+        <td>
+            {{=i.total}}
+        </td>
+        <td>
+            {{=i.net_total}}
+        </td>
+    </tr>
+{{pass}}
+</table>
+
+<b>{{=A("Create A New Invoice", _href=URL('add_invoice'))}}</b>
+{{if auth.has_membership('admin'):}}
+{{=A("Edit/Delete Customer", _href=URL('edit_customer',args=customer.id))}}
+{{pass}}

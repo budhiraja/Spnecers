@@ -1,0 +1,28 @@
+{{extend 'layout.html'}}
+<h1>Dealers</h1>
+<table border="2">
+    <tr>
+    <th>
+        Dealer Name
+    </th>
+    <th>
+        Mobile Number
+    </th>
+    <th>
+        Email
+    </th>
+    </tr>
+{{for dealer in dealers:}}
+<tr>
+	<td>{{=A(dealer.dealer_name, _href=URL('view_one_dealer',args=dealer.id))}}</td>
+
+    <td>
+        {{=dealer.mobile}}
+    </td>
+    <td>
+        {{=dealer.email}}
+    </td>
+    </tr>
+
+{{pass}}
+</table>

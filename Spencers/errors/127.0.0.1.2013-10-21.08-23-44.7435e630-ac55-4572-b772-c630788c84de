@@ -1,0 +1,751 @@
+(dp1
+S'output'
+p2
+S"<class '_mysql_exceptions.IntegrityError'> (1452, 'Cannot add or update a child row: a foreign key constraint fails (`phase4`.`CUSTOMERS`, CONSTRAINT `CUSTOMERS_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `auth_user` (`id`) ON DELETE CASCADE)')"
+p3
+sS'layer'
+p4
+S'/home/brat/web2py/applications/Intro2DB/controllers/default.py'
+p5
+sS'code'
+p6
+S'# -*- coding: utf-8 -*-\n# this file is released under public domain and you can use without limitations\n\n#########################################################################\n## This is a sample controller\n## - index is the default action of any application\n## - user is required for authentication and authorization\n## - download is for downloading files uploaded in the db (does streaming)\n## - call exposes all registered services (none by default)\n#########################################################################\n\n\ndef index():\n    """\n    example action using the internationalization operator T and flash\n    rendered by views/default/index.html or views/generic.html\n\n    if you need a simple wiki simple replace the two lines below with:\n    return auth.wiki()\n    """\n    if auth.is_logged_in():        \n        redirect(URL(\'onepage\'))\n    redirect(URL(\'user\'))\n\n\ndef user():\n    """\n    exposes:\n    http://..../[app]/default/user/login\n    http://..../[app]/default/user/logout\n    http://..../[app]/default/user/register\n    http://..../[app]/default/user/profile\n    http://..../[app]/default/user/retrieve_password\n    http://..../[app]/default/user/change_password\n    http://..../[app]/default/user/manage_users (requires membership in\n    use @auth.requires_login()\n        @auth.requires_membership(\'group name\')\n        @auth.requires_permission(\'read\',\'table name\',record_id)\n    to decorate functions that need access control\n    """\n    return dict(form=auth())\n\n@cache.action()\ndef download():\n    """\n    allows downloading of uploaded files\n    http://..../[app]/default/download/[filename]\n    """\n    return response.download(request, db)\n\n@auth.requires_login() \ndef onepage():\n    dealers=db(db.DEALERS).select(orderby=db.DEALERS.dealer_name)\n    products=db(db.PRODUCTS).select(orderby=db.PRODUCTS.item_name)\n    customers=db(db.CUSTOMERS).select(orderby=db.CUSTOMERS.cust_name)\n    return locals()\n@auth.requires_login() \ndef customers():    \n    return locals()\n\ndef view_one_dealer():\n    dealer=db.DEALERS(request.args(0))\n    return locals()\n\n@auth.requires_login() \ndef products():\n    return locals()\n\ndef add_invoice():\n    new_invoice=crud.create(db.BILLS,next=\'add_item_to_bill/[id]\')\n    return locals()\n\ndef calc_bill():\n    bill=db.BILLS(request.args(0))    \n    total=0\n    billitems=db.BILLITEMS.bill==request.args(0)\n    billitems=db(billitems)\n    billitems=billitems.select()\n    for i in billitems:\n        total+=(i.product.mrp* ( 100 - i.product.discount) / 100 * i.quantity)\n    net_total=total * 11/100 + total\n    bill.update_record(total=total,net_total=net_total)\n    redirect(URL(\'show_bill\',args=bill.id))\n\ndef bills():\n    bills=db(db.BILLS).select(orderby=db.BILLS.id)\n    return locals()\n\ndef show_bill():\n    bill=db.BILLS(request.args(0))\n    billitems=db.BILLITEMS.bill==request.args(0)\n    billitems=db(billitems)\n    billitems=billitems.select()\n    return locals()\n\ndef add_item_to_bill():\n    billid=request.args(0)\n    db.BILLITEMS.bill.default=request.args(0)\n    new_billitem=crud.create(db.BILLITEMS,next=URL(\'add_item_to_bill\',args=billid))\n    return locals()\n\n\n@auth.requires_login() \ndef dealers():\n    return locals()\n\n@auth.requires_login() \ndef view_customers():\n    customers=db(db.CUSTOMERS).select(orderby=db.CUSTOMERS.cust_name)\n    return locals()\n\n@auth.requires_login() \ndef add_customer():\n    new_customer = crud.create(db.CUSTOMERS, next=\'view_customers\')\n    return locals()\n\n@auth.requires_login() \ndef view_products():\n    products=db(db.PRODUCTS).select(orderby=db.PRODUCTS.item_name)\n    return locals()\n@auth.requires_login() \ndef add_product():\n    new_product = crud.create(db.PRODUCTS, next=\'view_products\')\n    return locals()\n\n@auth.requires_login() \ndef view_dealers():\n    dealers=db(db.DEALERS).select(orderby=db.DEALERS.dealer_name)\n    return locals()\n\n@auth.requires_login() \ndef add_dealer():\n    new_dealer = crud.create(db.DEALERS, next=\'view_dealers\')\n    return locals()\ndef view_product():\n    product=db.PRODUCTS(request.args(0))\n    return locals()\n\ndef view_one_customer():\n    bills=db.BILLS.customer==request.args(0)\n    bills=db(bills)\n    bills=bills.select()\n    customer_total=0\n    for i in bills:\n        if i.net_total!=None:\n            customer_total+=i.net_total\n    customer=db.CUSTOMERS(request.args(0))\n    return locals()\n    \ndef call():\n    """\n    exposes services. for example:\n    http://..../[app]/default/call/jsonrpc\n    decorate with @services.jsonrpc the functions to expose\n    supports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv\n    """\n    return service()\n\n\n@auth.requires_signature()\ndef data():\n    """\n    http://..../[app]/default/data/tables\n    http://..../[app]/default/data/create/[table]\n    http://..../[app]/default/data/read/[table]/[id]\n    http://..../[app]/default/data/update/[table]/[id]\n    http://..../[app]/default/data/delete/[table]/[id]\n    http://..../[app]/default/data/select/[table]\n    http://..../[app]/default/data/search/[table]\n    but URLs must be signed, i.e. linked with\n      A(\'table\',_href=URL(\'data/tables\',user_signature=True))\n    or with the signed load operator\n      LOAD(\'default\',\'data.load\',args=\'tables\',ajax=True,user_signature=True)\n    """\n    return dict(form=crud())\n\nresponse._vars=response._caller(add_customer)\n'
+p7
+sS'snapshot'
+p8
+(dp9
+S'exception'
+p10
+(dp11
+S'__module__'
+p12
+S"'_mysql_exceptions'"
+p13
+sS'__getslice__'
+p14
+S"<method-wrapper '__getslice__' of IntegrityError object>"
+p15
+sS'__str__'
+p16
+S"<method-wrapper '__str__' of IntegrityError object>"
+p17
+sS'__reduce__'
+p18
+S'<built-in method __reduce__ of IntegrityError object>'
+p19
+sS'__dict__'
+p20
+S'{}'
+p21
+sS'__sizeof__'
+p22
+S'<built-in method __sizeof__ of IntegrityError object>'
+p23
+sS'__weakref__'
+p24
+S'None'
+p25
+sS'__init__'
+p26
+S"<method-wrapper '__init__' of IntegrityError object>"
+p27
+sS'__setattr__'
+p28
+S"<method-wrapper '__setattr__' of IntegrityError object>"
+p29
+sS'__reduce_ex__'
+p30
+S'<built-in method __reduce_ex__ of IntegrityError object>'
+p31
+sS'__new__'
+p32
+S'<built-in method __new__ of type object>'
+p33
+sS'__format__'
+p34
+S'<built-in method __format__ of IntegrityError object>'
+p35
+sS'__class__'
+p36
+S"<class '_mysql_exceptions.IntegrityError'>"
+p37
+sS'__doc__'
+p38
+S"'Exception raised when the relational integrity o... foreign key check fails, duplicate key,\\n    etc.'"
+p39
+sS'__getitem__'
+p40
+S"<method-wrapper '__getitem__' of IntegrityError object>"
+p41
+sS'__setstate__'
+p42
+S'<built-in method __setstate__ of IntegrityError object>'
+p43
+sS'__getattribute__'
+p44
+S"<method-wrapper '__getattribute__' of IntegrityError object>"
+p45
+sS'args'
+p46
+S"(1452, 'Cannot add or update a child row: a foreign key ... REFERENCES `auth_user` (`id`) ON DELETE CASCADE)')"
+p47
+sS'__subclasshook__'
+p48
+S'<built-in method __subclasshook__ of type object>'
+p49
+sS'__unicode__'
+p50
+S'<built-in method __unicode__ of IntegrityError object>'
+p51
+sS'__delattr__'
+p52
+S"<method-wrapper '__delattr__' of IntegrityError object>"
+p53
+sS'__repr__'
+p54
+S"<method-wrapper '__repr__' of IntegrityError object>"
+p55
+sS'__hash__'
+p56
+S"<method-wrapper '__hash__' of IntegrityError object>"
+p57
+ssS'evalue'
+p58
+S"(1452, 'Cannot add or update a child row: a foreign key constraint fails (`phase4`.`CUSTOMERS`, CONSTRAINT `CUSTOMERS_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `auth_user` (`id`) ON DELETE CASCADE)')"
+p59
+sS'request'
+p60
+cgluon.html
+XML_unpickle
+p61
+(S's\x81_\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top;">ajax</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">application</td><td style="vertical-align:top;">:</td><td><div>Intro2DB</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">args</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cid</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">client</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">controller</td><td style="vertical-align:top;">:</td><td><div>default</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cookies</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">session_id_admin</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-16370dad-de75-4109-9dd4-dfd694e5156f<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_intro2db</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-93683c48-7490-4cfa-a05a-94f0d5445b12<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_welcome</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-94bbdbfc-a1b0-42a2-9d24-22f40e4515a9<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">env</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">CONTENT_LENGTH</td><td style="vertical-align:top;">:</td><td><div>972</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">CONTENT_TYPE</td><td style="vertical-align:top;">:</td><td><div>multipart/form-data; boundary=---------------------------2879849536840714082124590238</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT</td><td style="vertical-align:top;">:</td><td><div>text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT_ENCODING</td><td style="vertical-align:top;">:</td><td><div>gzip, deflate</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT_LANGUAGE</td><td style="vertical-align:top;">:</td><td><div>en-US,en;q=0.5</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_CONNECTION</td><td style="vertical-align:top;">:</td><td><div>keep-alive</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_CONTENT_LENGTH</td><td style="vertical-align:top;">:</td><td><div>972</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_CONTENT_TYPE</td><td style="vertical-align:top;">:</td><td><div>multipart/form-data; boundary=---------------------------2879849536840714082124590238</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_COOKIE</td><td style="vertical-align:top;">:</td><td><div>session_id_welcome=127.0.0.1-94bbdbfc-a1b0-42a2-9d24-22f40e4515a9; session_id_admin=127.0.0.1-16370dad-de75-4109-9dd4-dfd694e5156f; session_id_intro2db=127.0.0.1-93683c48-7490-4cfa-a05a-94f0d5445b12</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_HOST</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1:8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_REFERER</td><td style="vertical-align:top;">:</td><td><div>http://127.0.0.1:8000/Intro2DB/default/add_customer</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_USER_AGENT</td><td style="vertical-align:top;">:</td><td><div>Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:24.0) Gecko/20100101 Firefox/24.0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">PATH_INFO</td><td style="vertical-align:top;">:</td><td><div>/Intro2DB/default/add_customer</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">QUERY_STRING</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REMOTE_ADDR</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REMOTE_PORT</td><td style="vertical-align:top;">:</td><td><div>47885</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REQUEST_METHOD</td><td style="vertical-align:top;">:</td><td><div>POST</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SCRIPT_NAME</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_NAME</td><td style="vertical-align:top;">:</td><td><div>ubuntu</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_PORT</td><td style="vertical-align:top;">:</td><td><div>8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_PROTOCOL</td><td style="vertical-align:top;">:</td><td><div>HTTP/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_SOFTWARE</td><td style="vertical-align:top;">:</td><td><div>Rocket 1.2.6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">app_folders</td><td style="vertical-align:top;">:</td><td><div>set([&#x27;/home/brat/web2py/applications/Intro2DB/&#x27;, &#x27;/home/brat/web2py/applications/admin/&#x27;, &#x27;/home/brat/web2py/applications/welcome/&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">applications_parent</td><td style="vertical-align:top;">:</td><td><div>/home/brat/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cmd_args</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cmd_options</td><td style="vertical-align:top;">:</td><td><div>&lt;Values at 0x8e0c8ec: {&#x27;verbose&#x27;: False, &#x27;ip&#x27;: &#x27;127.0.0.1&#x27;, &#x27;debuglevel&#x27;: 30, &#x27;with_scheduler&#x27;: False, &#x27;ips&#x27;: [&#x27;127.0.1.1&#x27;], &#x27;shutdown_timeout&#x27;: 5, &#x27;taskbar&#x27;: False, &#x27;with_coverage&#x27;: False, &#x27;port&#x27;: 8000, &#x27;maxthreads&#x27;: None, &#x27;softcron&#x27;: False, &#x27;server_name&#x27;: &#x27;ubuntu&#x27;, &#x27;bpython&#x27;: False, &#x27;nogui&#x27;: True, &#x27;pid_filename&#x27;: &#x27;httpserver.pid&#x27;, &#x27;extcron&#x27;: False, &#x27;runcron&#x27;: False, &#x27;run_system_tests&#x27;: False, &#x27;test&#x27;: None, &#x27;folder&#x27;: &#x27;/home/brat/web2py&#x27;, &#x27;config&#x27;: &#x27;&#x27;, &#x27;import_models&#x27;: False, &#x27;winservice&#x27;: &#x27;&#x27;, &#x27;shell&#x27;: None, &#x27;run&#x27;: &#x27;&#x27;, &#x27;log_filename&#x27;: &#x27;httpserver.log&#x27;, &#x27;profiler_dir&#x27;: None, &#x27;args&#x27;: [&#x27;&#x27;], &#x27;socket_timeout&#x27;: 5, &#x27;ssl_ca_certificate&#x27;: None, &#x27;scheduler&#x27;: None, &#x27;interfaces&#x27;: None, &#x27;ssl_private_key&#x27;: &#x27;&#x27;, &#x27;scheduler_groups&#x27;: None, &#x27;password&#x27;: &#x27;1234&#x27;, &#x27;request_queue_size&#x27;: 5, &#x27;ssl_certificate&#x27;: &#x27;&#x27;, &#x27;cronjob&#x27;: False, &#x27;numthreads&#x27;: None, &#x27;quiet&#x27;: False, &#x27;minthreads&#x27;: None, &#x27;timeout&#x27;: 10, &#x27;plain&#x27;: False, &#x27;nobanner&#x27;: False}&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">content_length</td><td style="vertical-align:top;">:</td><td><div>972</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">content_type</td><td style="vertical-align:top;">:</td><td><div>multipart/form-data; boundary=---------------------------2879849536840714082124590238</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">db_sessions</td><td style="vertical-align:top;">:</td><td><div>set([])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">debugging</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">gluon_parent</td><td style="vertical-align:top;">:</td><td><div>/home/brat/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept</td><td style="vertical-align:top;">:</td><td><div>text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept_encoding</td><td style="vertical-align:top;">:</td><td><div>gzip, deflate</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept_language</td><td style="vertical-align:top;">:</td><td><div>en-US,en;q=0.5</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_connection</td><td style="vertical-align:top;">:</td><td><div>keep-alive</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_content_length</td><td style="vertical-align:top;">:</td><td><div>972</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_content_type</td><td style="vertical-align:top;">:</td><td><div>multipart/form-data; boundary=---------------------------2879849536840714082124590238</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_cookie</td><td style="vertical-align:top;">:</td><td><div>session_id_welcome=127.0.0.1-94bbdbfc-a1b0-42a2-9d24-22f40e4515a9; session_id_admin=127.0.0.1-16370dad-de75-4109-9dd4-dfd694e5156f; session_id_intro2db=127.0.0.1-93683c48-7490-4cfa-a05a-94f0d5445b12</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_host</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1:8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_referer</td><td style="vertical-align:top;">:</td><td><div>http://127.0.0.1:8000/Intro2DB/default/add_customer</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_user_agent</td><td style="vertical-align:top;">:</td><td><div>Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:24.0) Gecko/20100101 Firefox/24.0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_jython</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_pypy</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_source</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">local_hosts</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>ubuntu.ubuntu-domain</div></td></tr><tr><td><div>::ffff:127.0.0.1</div></td></tr><tr><td><div>::1</div></td></tr><tr><td><div>ubuntu</div></td></tr><tr><td><div>127.0.1.1</div></td></tr><tr><td><div>127.0.0.1</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path_info</td><td style="vertical-align:top;">:</td><td><div>/Intro2DB/default/add_customer</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">query_string</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">remote_addr</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">remote_port</td><td style="vertical-align:top;">:</td><td><div>47885</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">request_method</td><td style="vertical-align:top;">:</td><td><div>POST</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">request_uri</td><td style="vertical-align:top;">:</td><td><div>/Intro2DB/default/add_customer</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">script_name</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_name</td><td style="vertical-align:top;">:</td><td><div>ubuntu</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_port</td><td style="vertical-align:top;">:</td><td><div>8000</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_protocol</td><td style="vertical-align:top;">:</td><td><div>HTTP/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_software</td><td style="vertical-align:top;">:</td><td><div>Rocket 1.2.6</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_path</td><td style="vertical-align:top;">:</td><td><div>/home/brat/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_version</td><td style="vertical-align:top;">:</td><td><div>2.6.3-stable+timestamp.2013.09.15.17.01.20</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.errors</td><td style="vertical-align:top;">:</td><td><div>&lt;open file &#x27;&lt;stderr&gt;&#x27;, mode &#x27;w&#x27; at 0xb72810d0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.file_wrapper</td><td style="vertical-align:top;">:</td><td><div>&lt;class wsgiref.util.FileWrapper at 0x8dc1e9c&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.input</td><td style="vertical-align:top;">:</td><td><div>&lt;socket._fileobject object at 0xaf60ee2c&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.multiprocess</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.multithread</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.run_once</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.url_scheme</td><td style="vertical-align:top;">:</td><td><div>http</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.version</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>1</div></td></tr><tr><td><div>0</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_errors</td><td style="vertical-align:top;">:</td><td><div>&lt;open file &#x27;&lt;stderr&gt;&#x27;, mode &#x27;w&#x27; at 0xb72810d0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_file_wrapper</td><td style="vertical-align:top;">:</td><td><div>&lt;class wsgiref.util.FileWrapper at 0x8dc1e9c&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_input</td><td style="vertical-align:top;">:</td><td><div>&lt;socket._fileobject object at 0xaf60ee2c&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_multiprocess</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_multithread</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_run_once</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_url_scheme</td><td style="vertical-align:top;">:</td><td><div>http</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_version</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>1</div></td></tr><tr><td><div>0</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">extension</td><td style="vertical-align:top;">:</td><td><div>html</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">folder</td><td style="vertical-align:top;">:</td><td><div>/home/brat/web2py/applications/Intro2DB/</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">function</td><td style="vertical-align:top;">:</td><td><div>add_customer</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">global_settings</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">app_folders</td><td style="vertical-align:top;">:</td><td><div>set([&#x27;/home/brat/web2py/applications/Intro2DB/&#x27;, &#x27;/home/brat/web2py/applications/admin/&#x27;, &#x27;/home/brat/web2py/applications/welcome/&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">applications_parent</td><td style="vertical-align:top;">:</td><td><div>/home/brat/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cmd_args</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cmd_options</td><td style="vertical-align:top;">:</td><td><div>&lt;Values at 0x8e0c8ec: {&#x27;verbose&#x27;: False, &#x27;ip&#x27;: &#x27;127.0.0.1&#x27;, &#x27;debuglevel&#x27;: 30, &#x27;with_scheduler&#x27;: False, &#x27;ips&#x27;: [&#x27;127.0.1.1&#x27;], &#x27;shutdown_timeout&#x27;: 5, &#x27;taskbar&#x27;: False, &#x27;with_coverage&#x27;: False, &#x27;port&#x27;: 8000, &#x27;maxthreads&#x27;: None, &#x27;softcron&#x27;: False, &#x27;server_name&#x27;: &#x27;ubuntu&#x27;, &#x27;bpython&#x27;: False, &#x27;nogui&#x27;: True, &#x27;pid_filename&#x27;: &#x27;httpserver.pid&#x27;, &#x27;extcron&#x27;: False, &#x27;runcron&#x27;: False, &#x27;run_system_tests&#x27;: False, &#x27;test&#x27;: None, &#x27;folder&#x27;: &#x27;/home/brat/web2py&#x27;, &#x27;config&#x27;: &#x27;&#x27;, &#x27;import_models&#x27;: False, &#x27;winservice&#x27;: &#x27;&#x27;, &#x27;shell&#x27;: None, &#x27;run&#x27;: &#x27;&#x27;, &#x27;log_filename&#x27;: &#x27;httpserver.log&#x27;, &#x27;profiler_dir&#x27;: None, &#x27;args&#x27;: [&#x27;&#x27;], &#x27;socket_timeout&#x27;: 5, &#x27;ssl_ca_certificate&#x27;: None, &#x27;scheduler&#x27;: None, &#x27;interfaces&#x27;: None, &#x27;ssl_private_key&#x27;: &#x27;&#x27;, &#x27;scheduler_groups&#x27;: None, &#x27;password&#x27;: &#x27;1234&#x27;, &#x27;request_queue_size&#x27;: 5, &#x27;ssl_certificate&#x27;: &#x27;&#x27;, &#x27;cronjob&#x27;: False, &#x27;numthreads&#x27;: None, &#x27;quiet&#x27;: False, &#x27;minthreads&#x27;: None, &#x27;timeout&#x27;: 10, &#x27;plain&#x27;: False, &#x27;nobanner&#x27;: False}&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">db_sessions</td><td style="vertical-align:top;">:</td><td><div>set([])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">debugging</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">gluon_parent</td><td style="vertical-align:top;">:</td><td><div>/home/brat/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_jython</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_pypy</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_source</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">local_hosts</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>ubuntu.ubuntu-domain</div></td></tr><tr><td><div>::ffff:127.0.0.1</div></td></tr><tr><td><div>::1</div></td></tr><tr><td><div>ubuntu</div></td></tr><tr><td><div>127.0.1.1</div></td></tr><tr><td><div>127.0.0.1</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_version</td><td style="vertical-align:top;">:</td><td><div>2.6.3-stable+timestamp.2013.09.15.17.01.20</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_https</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_local</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_restful</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">now</td><td style="vertical-align:top;">:</td><td><div>datetime.datetime(2013, 10, 21, 8, 23, 44, 42665)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">raw_args</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">raw_extension</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">url</td><td style="vertical-align:top;">:</td><td><div>/Intro2DB/default/add_customer</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">utcnow</td><td style="vertical-align:top;">:</td><td><div>datetime.datetime(2013, 10, 21, 2, 53, 44, 42701)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">uuid</td><td style="vertical-align:top;">:</td><td><div>Intro2DB/127.0.0.1.2013-10-21.08-23-44.7435e630-ac55-4572-b772-c630788c84de</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi</td><td style="vertical-align:top;">:</td><td><div>&lt;gluon.main.LazyWSGI object at 0xb399fcec&gt;</div></td></tr></table></div>'
+tRp62
+sS'frames'
+p63
+(lp64
+(dp65
+S'file'
+p66
+S'/home/brat/web2py/gluon/restricted.py'
+p67
+sS'dump'
+p68
+(dp69
+S'environment'
+p70
+S"{'A': <class 'gluon.html.A'>, 'ANY_OF': <class 'gluon.validators.ANY_OF'>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, 'CAT': <class 'gluon.html.CAT'>, 'CENTER': <class 'gluon.html.CENTER'>, ...}"
+p71
+sS'ccode'
+p72
+S'<code object <module> at 0xae9a0968, file "/home...ations/Intro2DB/controllers/default.py", line 13>'
+p73
+ssS'lnum'
+p74
+I217
+sS'lines'
+p75
+(dp76
+I212
+S'    try:'
+p77
+sI213
+S'        if isinstance(code, types.CodeType):'
+p78
+sI214
+S'            ccode = code'
+p79
+sI215
+S'        else:'
+p80
+sI216
+S'            ccode = compile2(code, layer)'
+p81
+sI217
+S'        exec ccode in environment'
+p82
+sI218
+S'    except HTTP:'
+p83
+sI219
+S'        raise'
+p84
+sI220
+S'    except RestrictedError:'
+p85
+sI221
+S'        # do not encapsulate (obfuscate) the original RestrictedError'
+p86
+ssS'call'
+p87
+S"(code='# -*- coding: utf-8 -*-\\n# this file is released ...)\\n\\nresponse._vars=response._caller(add_customer)\\n', environment={'A': <class 'gluon.html.A'>, 'ANY_OF': <class 'gluon.validators.ANY_OF'>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, 'CAT': <class 'gluon.html.CAT'>, 'CENTER': <class 'gluon.html.CENTER'>, ...}, layer='/home/brat/web2py/applications/Intro2DB/controllers/default.py')"
+p88
+sS'func'
+p89
+S'restricted'
+p90
+sa(dp91
+g66
+S'/home/brat/web2py/applications/Intro2DB/controllers/default.py'
+p92
+sg68
+(dp93
+sg74
+I177
+sg75
+(dp94
+I166
+S'    http://..../[app]/default/data/update/[table]/[id]'
+p95
+sI167
+S'    http://..../[app]/default/data/delete/[table]/[id]'
+p96
+sI168
+S'    http://..../[app]/default/data/select/[table]'
+p97
+sI169
+S'    http://..../[app]/default/data/search/[table]'
+p98
+sI170
+S'    but URLs must be signed, i.e. linked with'
+p99
+sI171
+S"      A('table',_href=URL('data/tables',user_signature=True))"
+p100
+sI172
+S'    or with the signed load operator'
+p101
+sI173
+S"      LOAD('default','data.load',args='tables',ajax=True,user_signature=True)"
+p102
+sI174
+S'    """'
+p103
+sI175
+S'    return dict(form=crud())'
+p104
+ssg87
+S'()'
+p105
+sg89
+S'<module>'
+p106
+sa(dp107
+g66
+S'/home/brat/web2py/gluon/globals.py'
+p108
+sg68
+(dp109
+S'self'
+p110
+S'undefined'
+p111
+sS'f'
+S'<function add_customer>'
+p112
+ssg74
+I378
+sg75
+(dp113
+I373
+S'        self.menu = []             # used by the default view layout'
+p114
+sI374
+S'        self.files = []            # used by web2py_ajax.html'
+p115
+sI375
+S'        self.generic_patterns = []  # patterns to allow generic views'
+p116
+sI376
+S"        self.delimiters = ('{{', '}}')"
+p117
+sI377
+S'        self._vars = None'
+p118
+sI378
+S'        self._caller = lambda f: f()'
+p119
+sI379
+S'        self._view_environment = None'
+p120
+sI380
+S'        self._custom_commit = None'
+p121
+sI381
+S'        self._custom_rollback = None'
+p122
+sI382
+S''
+ssg87
+S'(f=<function add_customer>)'
+p123
+sg89
+S'<lambda>'
+p124
+sa(dp125
+g66
+S'/home/brat/web2py/gluon/tools.py'
+p126
+sg68
+(dp127
+S'action'
+p128
+S'<function add_customer>'
+p129
+sS'a'
+S'()'
+p130
+sS'b'
+g21
+ssg74
+I3207
+sg75
+(dp131
+I3202
+S'                    flag = condition'
+p132
+sI3203
+S'                if not flag:'
+p133
+sI3204
+S'                    current.session.flash = self.messages.access_denied'
+p134
+sI3205
+S'                    return call_or_redirect('
+p135
+sI3206
+S'                        self.settings.on_failed_authorization)'
+p136
+sI3207
+S'                return action(*a, **b)'
+p137
+sI3208
+S'            f.__doc__ = action.__doc__'
+p138
+sI3209
+S'            f.__name__ = action.__name__'
+p139
+sI3210
+S'            f.__dict__.update(action.__dict__)'
+p140
+sI3211
+S'            return f'
+p141
+ssg87
+S'(*a=(), **b={})'
+p142
+sg89
+S'f'
+sa(dp143
+g66
+S'/home/brat/web2py/applications/Intro2DB/controllers/default.py'
+p144
+sg68
+(dp145
+S'global crud'
+p146
+S'<gluon.tools.Crud object>'
+p147
+sS'db.CUSTOMERS'
+p148
+S'<Table CUSTOMERS (id,cust_name,address,mobile,email,created_by,created_on)>'
+p149
+sS'builtinnext'
+p150
+S'<built-in function next>'
+p151
+sS'new_customer'
+p152
+g111
+sS'global db'
+p153
+S'<DAL uri="mysql:******@localhost/phase4">'
+p154
+sS'crud.create'
+p155
+S'<bound method Crud.create of <gluon.tools.Crud object>>'
+p156
+ssg74
+I114
+sg75
+(dp157
+I109
+S'    customers=db(db.CUSTOMERS).select(orderby=db.CUSTOMERS.cust_name)'
+p158
+sI110
+S'    return locals()'
+p159
+sI111
+S''
+sI112
+S'@auth.requires_login()'
+p160
+sI113
+S'def add_customer():'
+p161
+sI114
+S"    new_customer = crud.create(db.CUSTOMERS, next='view_customers')"
+p162
+sI115
+S'    return locals()'
+p163
+sI116
+S''
+sI117
+S'@auth.requires_login()'
+p164
+sI118
+S'def view_products():'
+p165
+ssg87
+S'()'
+p166
+sg89
+S'add_customer'
+p167
+sa(dp168
+g66
+S'/home/brat/web2py/gluon/tools.py'
+p169
+sg68
+(dp170
+S'attributes'
+p171
+g21
+ssg74
+I3913
+sg75
+(dp172
+I3908
+S'            onaccept=onaccept,'
+p173
+sI3909
+S'            log=log,'
+p174
+sI3910
+S'            message=message,'
+p175
+sI3911
+S'            deletable=False,'
+p176
+sI3912
+S'            formname=formname,'
+p177
+sI3913
+S'            **attributes'
+p178
+sI3914
+S'            )'
+p179
+sI3915
+S''
+sI3916
+S'    def read(self, table, record):'
+p180
+sI3917
+S'        if not (isinstance(table, self.db.Table) or table in self.db.tables) \\'
+p181
+ssg87
+S"(self=<gluon.tools.Crud object>, table=<Table CUSTOMERS (id,cust_name,address,mobile,email,created_by,created_on)>, next='view_customers', onvalidation=<Storage {}>, onaccept=<Storage {}>, log='Record %(id)s created', message='Record Created', formname=<function <lambda>>, **attributes={})"
+p182
+sg89
+S'create'
+p183
+sa(dp184
+g66
+S'/home/brat/web2py/gluon/tools.py'
+p185
+sg68
+(dp186
+S'detect_record_change'
+p187
+g111
+sS'self'
+p188
+S'<gluon.tools.Crud object>'
+p189
+sS'self.settings'
+p190
+S"<Storage {'showid': False, 'delete_onaccept': <S...ble': True, 'create_onvalidation': <Storage {}>}>"
+p191
+sS'self.settings.detect_record_change'
+p192
+S'True'
+p193
+ssg74
+I3854
+sg75
+(dp194
+I3849
+S'        if isinstance(onvalidation, StorageList):'
+p195
+sI3850
+S'            onvalidation = onvalidation.get(table._tablename, [])'
+p196
+sI3851
+S'        if form.accepts(request, _session, formname=_formname,'
+p197
+sI3852
+S'                        onvalidation=onvalidation, keepvalues=keepvalues,'
+p198
+sI3853
+S'                        hideerror=self.settings.hideerror,'
+p199
+sI3854
+S'                        detect_record_change=self.settings.detect_record_change):'
+p200
+sI3855
+S'            self.accepted = True'
+p201
+sI3856
+S'            response.flash = message'
+p202
+sI3857
+S'            if log:'
+p203
+sI3858
+S'                self.log_event(log, form.vars)'
+p204
+ssg87
+S"(self=<gluon.tools.Crud object>, table=<Table CUSTOMERS (id,cust_name,address,mobile,email,created_by,created_on)>, record=None, next='view_customers', onvalidation=[], onaccept=<Storage {}>, ondelete=<Storage {}>, log='Record %(id)s created', message='Record Created', deletable=False, formname=<function <lambda>>, **attributes={'hidden': {'_next': 'view_customers'}})"
+p205
+sg89
+S'update'
+p206
+sa(dp207
+g66
+S'/home/brat/web2py/gluon/sqlhtml.py'
+p208
+sg68
+(dp209
+S'self.vars.id'
+p210
+S'None'
+p211
+sS'fields'
+p212
+S"{'address': '1234 Main Street\\r\\nHyderabad\\r\\nIndia', 'created_by': 1L, 'created_on': datetime.datetime(2013, 10, 21, 8, 23, 44, 42665), 'cust_name': 'Jared Mills', 'email': 'jared@gmail.com', 'mobile': '0987654321'}"
+p213
+sS'self'
+p214
+S'<gluon.sqlhtml.SQLFORM object>'
+p215
+sS'self.vars'
+p216
+S"<Storage {'mobile': '0987654321', 'cust_name': '...ress': '1234 Main Street\\r\\nHyderabad\\r\\nIndia'}>"
+p217
+sS'self.table.insert'
+p218
+S'<bound method Table.insert of <Table CUSTOMERS (...ame,address,mobile,email,created_by,created_on)>>'
+p219
+sS'self.table'
+p220
+S'<Table CUSTOMERS (id,cust_name,address,mobile,email,created_by,created_on)>'
+p221
+ssg74
+I1524
+sg75
+(dp222
+I1519
+S'                    self.vars.id = self.record[self.id_field_name]'
+p223
+sI1520
+S'                    if fields:'
+p224
+sI1521
+S'                        self.table._db(self.table._id == self.record['
+p225
+sI1522
+S'                                       self.id_field_name]).update(**fields)'
+p226
+sI1523
+S'                else:'
+p227
+sI1524
+S'                    self.vars.id = self.table.insert(**fields)'
+p228
+sI1525
+S'        self.accepted = ret'
+p229
+sI1526
+S'        return ret'
+p230
+sI1527
+S''
+sI1528
+S'    AUTOTYPES = {'
+p231
+ssg87
+S"(self=<gluon.sqlhtml.SQLFORM object>, request_vars=<Storage {'mobile': '0987654321', 'cust_name': '...f6-bd27c162e0bc', '_formname': 'CUSTOMERS/None'}>, session=<Storage {'last_query': 'db.DEALERS.id>0', '_for...login]': 'dd8fc569-4b7d-4716-9e83-3af7fe36346c'}>, formname='CUSTOMERS/None', keepvalues=False, onvalidation=[], dbio=True, hideerror=False, detect_record_change=True, **kwargs={})"
+p232
+sg89
+S'accepts'
+p233
+sa(dp234
+g66
+S'/home/brat/web2py/gluon/dal.py'
+p235
+sg68
+(dp236
+S'self._listify'
+p237
+S'<bound method Table._listify of <Table CUSTOMERS...ame,address,mobile,email,created_by,created_on)>>'
+p238
+sS'fields'
+p239
+S"{'address': '1234 Main Street\\r\\nHyderabad\\r\\nIndia', 'created_by': 1L, 'created_on': datetime.datetime(2013, 10, 21, 8, 23, 44, 42665), 'cust_name': 'Jared Mills', 'email': 'jared@gmail.com', 'mobile': '0987654321'}"
+p240
+sS'self'
+p241
+S'<Table CUSTOMERS (id,cust_name,address,mobile,email,created_by,created_on)>'
+p242
+sS'ret'
+p243
+g111
+sS'self._db._adapter'
+p244
+S'<gluon.dal.MySQLAdapter object>'
+p245
+sS'self._db._adapter.insert'
+p246
+S'<bound method MySQLAdapter.insert of <gluon.dal.MySQLAdapter object>>'
+p247
+sS'self._db'
+p248
+S'<DAL uri="mysql:******@localhost/phase4">'
+p249
+ssg74
+I8725
+sg75
+(dp250
+I8720
+S''
+sI8721
+S'    def insert(self, **fields):'
+p251
+sI8722
+S'        fields = self._defaults(fields)'
+p252
+sI8723
+S'        self._attempt_upload(fields)'
+p253
+sI8724
+S'        if any(f(fields) for f in self._before_insert): return 0'
+p254
+sI8725
+S'        ret =  self._db._adapter.insert(self, self._listify(fields))'
+p255
+sI8726
+S'        if ret and self._after_insert:'
+p256
+sI8727
+S'            fields = Row(fields)'
+p257
+sI8728
+S'            [f(fields,ret) for f in self._after_insert]'
+p258
+sI8729
+S'        return ret'
+p259
+ssg87
+S"(self=<Table CUSTOMERS (id,cust_name,address,mobile,email,created_by,created_on)>, **fields={'address': '1234 Main Street\\r\\nHyderabad\\r\\nIndia', 'created_by': 1L, 'created_on': datetime.datetime(2013, 10, 21, 8, 23, 44, 42665), 'cust_name': 'Jared Mills', 'email': 'jared@gmail.com', 'mobile': '0987654321'})"
+p260
+sg89
+S'insert'
+p261
+sa(dp262
+g66
+S'/home/brat/web2py/gluon/dal.py'
+p263
+sg68
+(dp264
+S'e'
+S"IntegrityError(1452, 'Cannot add or update a chi...EFERENCES `auth_user` (`id`) ON DELETE CASCADE)')"
+p265
+ssg74
+I1245
+sg75
+(dp266
+I1248
+S'                             if k[0].name in table._primarykey])'
+p267
+sI1249
+S'        id = self.lastrowid(table)'
+p268
+sI1240
+S'            self.execute(query)'
+p269
+sI1241
+S'        except Exception:'
+p270
+sI1242
+S'            e = sys.exc_info()[1]'
+p271
+sI1243
+S"            if hasattr(table,'_on_insert_error'):"
+p272
+sI1244
+S'                return table._on_insert_error(table,fields,e)'
+p273
+sI1245
+S'            raise e'
+p274
+sI1246
+S"        if hasattr(table,'_primarykey'):"
+p275
+sI1247
+S'            return dict([(k[0].name, k[1]) for k in fields \\'
+p276
+ssg87
+S"(self=<gluon.dal.MySQLAdapter object>, table=<Table CUSTOMERS (id,cust_name,address,mobile,email,created_by,created_on)>, fields=[(<gluon.dal.Field object>, '0987654321'), (<gluon.dal.Field object>, 'Jared Mills'), (<gluon.dal.Field object>, 1L), (<gluon.dal.Field object>, datetime.datetime(2013, 10, 21, 8, 23, 44, 42665)), (<gluon.dal.Field object>, '1234 Main Street\\r\\nHyderabad\\r\\nIndia'), (<gluon.dal.Field object>, 'jared@gmail.com')])"
+p277
+sg89
+g261
+sasS'pyver'
+p278
+S'Python 2.7.3: /usr/bin/python (prefix: /usr)'
+p279
+sS'session'
+p280
+g61
+(S's\x03\n\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top;">auth</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">expiration</td><td style="vertical-align:top;">:</td><td><div>3600</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">hmac_key</td><td style="vertical-align:top;">:</td><td><div>14536c7e-9462-4bfa-9433-69b28b3e999e</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">last_visit</td><td style="vertical-align:top;">:</td><td><div>datetime.datetime(2013, 10, 21, 8, 22, 32, 461987)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">remember</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">user</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">email</td><td style="vertical-align:top;">:</td><td><div>amar@gmail.com</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">first_name</td><td style="vertical-align:top;">:</td><td><div>Amar</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">id</td><td style="vertical-align:top;">:</td><td><div>1L</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">last_name</td><td style="vertical-align:top;">:</td><td><div>Budhiraja</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">registration_id</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">registration_key</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">reset_password_key</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">user_groups</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">1</td><td style="vertical-align:top;">:</td><td><div>user_1</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">flash</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">last_orderby</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">last_query</td><td style="vertical-align:top;">:</td><td><div>db.DEALERS.id&gt;0</div></td></tr></table></div>'
+tRp281
+sS'etype'
+p282
+S"<class '_mysql_exceptions.IntegrityError'>"
+p283
+sS'date'
+p284
+S'Mon Oct 21 08:23:44 2013'
+p285
+sS'response'
+p286
+g61
+(S'ss-\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top;">body</td><td style="vertical-align:top;">:</td><td><div>&lt;cStringIO.StringO object at 0xafb5f6a0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cookies</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">delimiters</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>{{</div></td></tr><tr><td><div>}}</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">files</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">flash</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">generic_patterns</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>*</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">google_analytics_id</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">headers</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">X-Powered-By</td><td style="vertical-align:top;">:</td><td><div>web2py</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">logo</td><td style="vertical-align:top;">:</td><td><div><a class="brand" data-w2p_disable_with="default" href="http://www.web2py.com/"><b>web<span>2</span>py</b>&trade;&nbsp;</a></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">menu</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div><table><tr><td><div>Home</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/Intro2DB/default/index</div></td></tr><tr><td><div><table></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div><span class="highlighted">web2py</span></div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://web2py.com</div></td></tr><tr><td><div><table><tr><td><div><table><tr><td><div>My Sites</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/site</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>This App</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/design/Intro2DB</div></td></tr><tr><td><div>[(&lt;lazyT &#x27;Controller&#x27;&gt;, False, &#x27;/admin/default/edit/Intro2DB/controllers/default.py&#x27;), (&lt;lazyT &#x27;View&#x27;&gt;, False, &#x27;/admin/default/edit/Intro2DB/views/default/add_customer.html&#x27;), (&lt;lazyT &#x27;Layout&#x27;&gt;, False, &#x27;/admin/default/edit/Intro2DB/views/layout.html&#x27;), (&lt;lazyT &#x27;Stylesheet&#x27;&gt;, False, &#x27;/admin/default/edit/Intro2DB/static/css/web2py.css&#x27;), (&lt;lazyT &#x27;DB Model&#x27;&gt;, False, &#x27;/admin/default/edit/Intro2DB/models/db.py&#x27;), (&lt;lazyT &#x27;Menu Model&#x27;&gt;, False, &#x27;/admin/default/edit/Intro2DB/models/menu.py&#x27;), (&lt;lazyT &#x27;Database&#x27;&gt;, False, &#x27;/Intro2DB/appadmin/index&#x27;), (&lt;lazyT &#x27;Errors&#x27;&gt;, False, &#x27;/admin/default/errors/Intro2DB&#x27;), (&lt;lazyT &#x27;About&#x27;&gt;, False, &#x27;/admin/default/about/Intro2DB&#x27;)]</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>web2py.com</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com</div></td></tr><tr><td><div>[(&lt;lazyT &#x27;Download&#x27;&gt;, False, &#x27;http://www.web2py.com/examples/default/download&#x27;), (&lt;lazyT &#x27;Support&#x27;&gt;, False, &#x27;http://www.web2py.com/examples/default/support&#x27;), (&lt;lazyT &#x27;Demo&#x27;&gt;, False, &#x27;http://web2py.com/demo_admin&#x27;), (&lt;lazyT &#x27;Quick Examples&#x27;&gt;, False, &#x27;http://web2py.com/examples/default/examples&#x27;), (&lt;lazyT &#x27;FAQ&#x27;&gt;, False, &#x27;http://web2py.com/AlterEgo&#x27;), (&lt;lazyT &#x27;Videos&#x27;&gt;, False, &#x27;http://www.web2py.com/examples/default/videos/&#x27;), (&lt;lazyT &#x27;Free Applications&#x27;&gt;, False, &#x27;http://web2py.com/appliances&#x27;), (&lt;lazyT &#x27;Plugins&#x27;&gt;, False, &#x27;http://web2py.com/plugins&#x27;), (&lt;lazyT &#x27;Layouts&#x27;&gt;, False, &#x27;http://web2py.com/layouts&#x27;), (&lt;lazyT &#x27;Recipes&#x27;&gt;, False, &#x27;http://web2pyslices.com/&#x27;), (&lt;lazyT &#x27;Semantic&#x27;&gt;, False, &#x27;http://web2py.com/semantic&#x27;)]</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Documentation</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book</div></td></tr><tr><td><div>[(&lt;lazyT &#x27;Preface&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/00&#x27;), (&lt;lazyT &#x27;Introduction&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/01&#x27;), (&lt;lazyT &#x27;Python&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/02&#x27;), (&lt;lazyT &#x27;Overview&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/03&#x27;), (&lt;lazyT &#x27;The Core&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/04&#x27;), (&lt;lazyT &#x27;The Views&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/05&#x27;), (&lt;lazyT &#x27;Database&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/06&#x27;), (&lt;lazyT &#x27;Forms and Validators&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/07&#x27;), (&lt;lazyT &#x27;Email and SMS&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/08&#x27;), (&lt;lazyT &#x27;Access Control&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/09&#x27;), (&lt;lazyT &#x27;Services&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/10&#x27;), (&lt;lazyT &#x27;Ajax Recipes&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/11&#x27;), (&lt;lazyT &#x27;Components and Plugins&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/12&#x27;), (&lt;lazyT &#x27;Deployment Recipes&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/13&#x27;), (&lt;lazyT &#x27;Other Recipes&#x27;&gt;, False, &#x27;http://www.web2py.com/book/default/chapter/14&#x27;), (&lt;lazyT &#x27;Buy this book&#x27;&gt;, False, &#x27;http://stores.lulu.com/web2py&#x27;)]</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Community</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>None</div></td></tr><tr><td><div>[(&lt;lazyT &#x27;Groups&#x27;&gt;, False, &#x27;http://www.web2py.com/examples/default/usergroups&#x27;), (&lt;lazyT &#x27;Twitter&#x27;&gt;, False, &#x27;http://twitter.com/web2py&#x27;), (&lt;lazyT &#x27;Live Chat&#x27;&gt;, False, &#x27;http://webchat.freenode.net/?channels=web2py&#x27;)]</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Plugins</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>None</div></td></tr><tr><td><div>[(&#x27;plugin_wiki&#x27;, False, &#x27;http://web2py.com/examples/default/download&#x27;), (&lt;lazyT &#x27;Other Plugins&#x27;&gt;, False, &#x27;http://web2py.com/plugins&#x27;), (&lt;lazyT &#x27;Layout Plugins&#x27;&gt;, False, &#x27;http://web2py.com/layouts&#x27;)]</div></td></tr></table></div></td></tr></table></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">meta</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">author</td><td style="vertical-align:top;">:</td><td><div>Your Name &lt;you@example.com&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">description</td><td style="vertical-align:top;">:</td><td><div>a cool new app</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">generator</td><td style="vertical-align:top;">:</td><td><div>Web2py Web Framework</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">keywords</td><td style="vertical-align:top;">:</td><td><div>web2py, python, framework</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">models_to_run</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>^\\w+\\.py$</div></td></tr><tr><td><div>^default/\\w+\\.py$</div></td></tr><tr><td><div>^default/add_customer/\\w+\\.py$</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">postprocessing</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_client</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_cookie_compression_level</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_cookie_expires</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_cookie_key</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_data_name</td><td style="vertical-align:top;">:</td><td><div>session_data_intro2db</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_file</td><td style="vertical-align:top;">:</td><td><div>&lt;open file &#x27;/home/brat/web2py/applications/Intro2DB/sessions/127.0.0.1-93683c48-7490-4cfa-a05a-94f0d5445b12&#x27;, mode &#x27;rb+&#x27; at 0xafbcd020&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_filename</td><td style="vertical-align:top;">:</td><td><div>/home/brat/web2py/applications/Intro2DB/sessions/127.0.0.1-93683c48-7490-4cfa-a05a-94f0d5445b12</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_hash</td><td style="vertical-align:top;">:</td><td><div>16698148764c62eb8792d8d2d71390e1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id</td><td style="vertical-align:top;">:</td><td><div>127.0.0.1-93683c48-7490-4cfa-a05a-94f0d5445b12</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_name</td><td style="vertical-align:top;">:</td><td><div>session_id_intro2db</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_locked</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_masterapp</td><td style="vertical-align:top;">:</td><td><div>Intro2DB</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_new</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_storage_type</td><td style="vertical-align:top;">:</td><td><div>file</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">status</td><td style="vertical-align:top;">:</td><td><div>200</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">subtitle</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">title</td><td style="vertical-align:top;">:</td><td><div>Intro2Db</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">view</td><td style="vertical-align:top;">:</td><td><div>default/add_customer.html</div></td></tr></table></div>'
+tRp287
+sS'locals'
+p288
+(dp289
+S'fields'
+p290
+S"[(<gluon.dal.Field object>, '0987654321'), (<gluon.dal.Field object>, 'Jared Mills'), (<gluon.dal.Field object>, 1L), (<gluon.dal.Field object>, datetime.datetime(2013, 10, 21, 8, 23, 44, 42665)), (<gluon.dal.Field object>, '1234 Main Street\\r\\nHyderabad\\r\\nIndia'), (<gluon.dal.Field object>, 'jared@gmail.com')]"
+p291
+sS'self'
+p292
+S'<gluon.dal.MySQLAdapter object>'
+p293
+sS'e'
+S"IntegrityError(1452, 'Cannot add or update a chi...EFERENCES `auth_user` (`id`) ON DELETE CASCADE)')"
+p294
+sS'table'
+p295
+S'<Table CUSTOMERS (id,cust_name,address,mobile,email,created_by,created_on)>'
+p296
+sS'query'
+p297
+S'"INSERT INTO CUSTOMERS(mobile,cust_name,created_b...ain Street\\r\\nHyderabad\\r\\nIndia\',\'jared@gmail.com\');"'
+p298
+sssS'traceback'
+p299
+S'Traceback (most recent call last):\n  File "/home/brat/web2py/gluon/restricted.py", line 217, in restricted\n    exec ccode in environment\n  File "/home/brat/web2py/applications/Intro2DB/controllers/default.py", line 177, in <module>\n  File "/home/brat/web2py/gluon/globals.py", line 378, in <lambda>\n    self._caller = lambda f: f()\n  File "/home/brat/web2py/gluon/tools.py", line 3207, in f\n    return action(*a, **b)\n  File "/home/brat/web2py/applications/Intro2DB/controllers/default.py", line 114, in add_customer\n    new_customer = crud.create(db.CUSTOMERS, next=\'view_customers\')\n  File "/home/brat/web2py/gluon/tools.py", line 3913, in create\n    **attributes\n  File "/home/brat/web2py/gluon/tools.py", line 3854, in update\n    detect_record_change=self.settings.detect_record_change):\n  File "/home/brat/web2py/gluon/sqlhtml.py", line 1524, in accepts\n    self.vars.id = self.table.insert(**fields)\n  File "/home/brat/web2py/gluon/dal.py", line 8725, in insert\n    ret =  self._db._adapter.insert(self, self._listify(fields))\n  File "/home/brat/web2py/gluon/dal.py", line 1245, in insert\n    raise e\nIntegrityError: (1452, \'Cannot add or update a child row: a foreign key constraint fails (`phase4`.`CUSTOMERS`, CONSTRAINT `CUSTOMERS_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `auth_user` (`id`) ON DELETE CASCADE)\')\n'
+p300
+s.

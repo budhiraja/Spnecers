@@ -1,0 +1,102 @@
+<table>
+<tr>
+<td>
+<table>
+<tr><td><b>{{=bill.customer.cust_name}}</b></td></tr>
+<tr><td><b>{{=bill.customer.email}}</b></td></tr>
+<tr><td><b>{{=bill.customer.address}}</b></td></tr>
+</table>
+<td>
+<img src="/home/brat/web2py/applications/Spencers/static/images/white.png" align="right">
+<td>
+<td>
+<img src="/home/brat/web2py/applications/Spencers/static/images/logo2.jpeg" align="right">
+<td>
+</tr>
+</table>
+<h2>BILL No.: {{=bill.id}}</h2>
+
+<table border="1">
+    <tr>
+        <th>
+            Products
+        </th>
+        <th>
+            Unit Price
+        </th>
+        <th>
+            Quantity
+        </th>
+        <th>
+            Sub-total
+        </th>
+    </tr>
+    {{for i in billitems:}}
+    <tr>
+        <td>
+        {{=i.product.item_name}}
+        </td>
+        <td>
+            {{=i.product.mrp}}
+        </td>
+        <td>
+            {{=i.quantity}}
+        </td>
+        <td>
+            {{=(i.product.mrp*i.quantity)}}
+        </td>
+    </tr>
+    {{pass}}
+    </table>
+<br>
+<br>
+<table align="right">
+    <tr>
+	<td>{{=""}}</td>
+	<td>{{=""}}</td>
+	<td>{{=""}}</td>
+	<td>{{=""}}</td>
+	<td>{{=""}}</td>
+	<td>{{=""}}</td>
+	<td>{{=""}}</td>
+        <td><b>
+            Total:</b>
+        </td>
+        <td>
+            {{=bill.total}}
+        </td>
+    </tr>
+
+    <tr>
+	<td>{{=""}}</td>
+	<td>{{=""}}</td>
+	<td>{{=""}}</td>
+	<td>{{=""}}</td>
+	<td>{{=""}}</td>
+	<td>{{=""}}</td>
+	<td>{{=""}}</td>
+        <td><b>
+            Taxes:
+            </b>
+        </td>
+        <td>
+            {{=bill.total*11/100}}
+        </td>
+    </tr>
+    <tr>
+	<td>{{=""}}</td>
+	<td>{{=""}}</td>
+	<td>{{=""}}</td>
+	<td>{{=""}}</td>
+	<td>{{=""}}</td>
+	<td>{{=""}}</td>
+	<td>{{=""}}</td>
+        <td><b>
+            Net Amount:
+            </b>
+        </td>
+        <td>
+            {{=bill.net_total}}
+        </td>
+    </tr>
+</table>

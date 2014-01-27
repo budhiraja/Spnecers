@@ -1,0 +1,44 @@
+{{extend 'layout.html'}}
+<h1>Billing Home</h1>
+<h4><b>{{=A("Create A New Invoice", _href=URL('add_invoice'))}}</b><h4>
+    
+    </h4>
+
+<h4>{{=message}}</h4>
+{{=form}}
+<h3>All Bills</h3>
+<table border="2">
+    <tr>
+        <th>
+                Bill Id
+        </th>
+        <th>
+                Customer
+        </th>
+        <th>
+                Total
+        </th>
+        <th>
+                Net Total
+        </th>
+    </tr>
+
+
+{{for i in bills:}}
+    <tr>
+        <td>
+            {{=A(i.id, _href=URL('show_bill',args=i.id))}}
+        </td>
+        <td>
+            {{=A(i.customer.cust_name, _href=URL('view_one_customer',args=i.id))}}
+        </td>
+        <td>
+            {{=i.total}}
+        </td>
+        <td>
+            {{=i.net_total}}
+        </td>
+    </tr>
+
+{{pass}}
+    </table>

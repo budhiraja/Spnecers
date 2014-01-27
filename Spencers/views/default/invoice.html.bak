@@ -1,0 +1,83 @@
+<img src="{{=URL('static','images/logo.jpg')}}">
+<h1>Spencer's</h1>
+<h2>BILL No.: {{=bill.id}}</h2>
+<table>
+    <tr><b>
+        Customer Details</b>
+    </tr>
+    <tr>
+    <td><b>
+        Name:</b> {{=bill.customer.cust_name}}
+    </td>
+    <td><b>
+        Email: {{=bill.customer.email}}
+        </b>
+    </td>
+    </tr>
+</table>
+<table border="1">
+    <tr>
+        <th>
+            Products
+        </th>
+        <th>
+            Unit Price
+        </th>
+        <th>
+            Quantity
+        </th>
+        <th>
+            Sub-total
+        </th>
+    </tr>
+    {{for i in billitems:}}
+    <tr>
+        <td>
+        {{=i.product.item_name}}
+        </td>
+        <td>
+            {{=i.product.mrp}}
+        </td>
+        <td>
+            {{=i.quantity}}
+        </td>
+        <td>
+            {{=(i.product.mrp*i.quantity)}}
+        </td>
+    </tr>
+    {{pass}}
+    </table>
+<br>
+<br>
+<table>
+    <tr>
+        <td><b>
+            Total Bill Amount:</b>
+        </td>
+        <td>{{=""}}</td>
+        <td>
+            {{=bill.total}}
+        </td>
+    </tr>
+
+    <tr>
+        <td><b>
+            Taxes:
+            </b>
+        </td>
+        <td>{{"        "}}</td>
+        <td>
+            {{=bill.total*11/100}}
+        </td>
+    </tr>
+    <tr>
+        <td><b>
+            Net Amount:
+            </b>
+        </td>
+        <td>{{"         "}}</td>
+        <td>
+            {{=bill.net_total}}
+        </td>
+    </tr>
+</table>

@@ -1,0 +1,26 @@
+{{extend 'layout.html'}}
+<h1>PRODUCTS</h1>
+<table border="2">
+<tr>
+    <th>
+        Product Name
+    </th>
+    <th>
+        Price Per Unit
+    </th>
+    <th>
+        Dealer
+    </th>
+</tr>
+{{for product in products:}}
+<tr>
+	<td>{{=A(product.item_name, _href=URL('view_product',args=product.id))}}</td>
+    <td>{{=product.mrp}}</td>
+    <td>{{=A(product.dealer.dealer_name, _href=URL('view_one_dealer',args=product.dealer.id))}}</td>
+    
+</tr>
+{{pass}}
+<tr>
+
+</tr>
+</table>

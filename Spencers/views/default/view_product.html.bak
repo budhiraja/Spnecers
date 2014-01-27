@@ -1,0 +1,34 @@
+{{extend 'layout.html'}}
+<h1>{{=product.item_name}}</h1>
+<table>
+    <tr>
+        <td>
+            <b>Max Retail Price</b>
+        </td>
+        <td>
+            <p>
+              Rs {{=product.mrp}}   
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Current Discount on MRP</b>
+        </td>
+        <td>
+            {{=product.discount}}%
+        </td>
+    </tr>
+     <tr>
+        <td>
+            <b>Dealer Associated</b>
+        </td>
+        <td>
+            {{=A(product.dealer.dealer_name, _href=URL('view_one_dealer',args=product.dealer))}}
+
+        </td>
+    </tr>
+</table>
+{{if auth.has_membership('admin'):}}
+{{=A("Edit/Delete Product", _href=URL('edit_customer',args=product.dealer))}}
+{{pass}}

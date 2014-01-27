@@ -1,0 +1,43 @@
+{{extend 'layout.html'}}
+<h1>{{=dealer.dealer_name}}</h1>
+<table>
+     <tr>
+         <td>
+                <b>Mobile Number:</b>
+                {{=dealer.mobile}}
+            </td>
+        <td>
+            <b>Email: </b>
+            {{=dealer.email}}
+        </td>
+    </tr>
+    <tr>
+        <td>
+        <b>Office Address</b>
+        </td>
+        <td>
+            <b>Shipping Address</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+        <p>
+            {{=dealer.office_add}}
+        </p>
+        </td>
+         <td>
+        <p>
+            {{=dealer.ship_add}}
+        </p>
+        </td>
+    </tr>
+</table>
+
+<b>{{=A("View All Dealers", _href=URL('view_dealers'))}}</b><br>
+<b>{{=A("Add A New Dealer", _href=URL('add_dealer'))}}</b>
+<b>
+<br>
+{{if auth.has_membership('admin'):}}
+{{=A("Edit/Delete Dealer", _href=URL('edit_dealer',args=dealer.id))}}
+{{pass}}
+</b>

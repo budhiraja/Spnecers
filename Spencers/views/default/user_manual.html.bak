@@ -1,0 +1,4 @@
+{{extend 'layout.html'}}
+<h1>This is the default/user_manual.html template</h1>
+{{=P(A('Download ',_href=URL('static', 'manual')))}}
+{{=BEAUTIFY(response._vars)}}

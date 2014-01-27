@@ -1,0 +1,28 @@
+{{extend 'layout.html'}}
+<h1>Customer Feedbacks</h1>
+<table>
+    <tr>
+        <th>
+            Name
+        </th>
+        <th>
+            Email
+        </th>
+        <th>
+            Feedback
+        </th>
+    </tr>
+{{for i in fbacks:}}
+<tr>
+    <td>
+        {{=i.name}}
+    </td>
+    <td>
+        {{=i.email}}
+    </td>
+    <td>
+        {{=i.Feedback}}
+    </td>
+</tr>
+    {{pass}}
+</table>

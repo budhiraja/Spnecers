@@ -1,0 +1,92 @@
+{{extend 'layout.html'}}
+
+<img src="{{=URL('static','images/logo.jpg')}}">
+<h1>BILL No.: {{=bill.id}}</h1>
+<table>
+    <tr><b>
+        Customer Details</b>
+    </tr>
+    <tr>
+    <td><b>
+        Name:</b> {{=A(bill.customer.cust_name,_href=URL('view_one_customer',args=bill.customer.id))}}
+    </td>
+    <td><b>
+        Email: {{=bill.customer.email}}
+        </b>
+    </td>
+    </tr>
+</table>
+<table border="2">
+    <tr>
+        <th>
+            Products
+        </th>
+        <th>
+            Unit Price
+        </th>
+        <th>
+            Quantity
+        </th>
+        <th>
+            Discount
+        </th>
+        <th>
+            Sub-total
+        </th>
+    </tr>
+    {{for i in billitems:}}
+    <tr>
+        <td>
+        {{=A(i.product.item_name,_href=URL('view_product',args=i.product.id))}}
+        </td>
+        <td>
+            {{=i.product.mrp}}
+        </td>
+        <td>
+            {{=i.quantity}}
+        </td>
+        <td>
+            {{=i.product.discount*i.product.mrp/100}}
+        </td>
+        <td>
+            {{=(i.product.mrp* ( 100 - i.product.discount) / 100 * i.quantity)}}
+        </td>
+    </tr>
+    {{pass}}
+    </table>
+<table>
+    <tr>
+        <td><b>
+            Total Bill Amount:</b>
+        </td>
+        <td>{{=""}}</td>
+        <td>
+            {{=bill.total}}
+        </td>
+    </tr>
+
+    <tr>
+        <td><b>
+            Taxes:
+            </b>
+        </td>
+        <td>{{"        "}}</td>
+        <td>
+            {{=bill.total*11/100}}
+        </td>
+    </tr>
+    <tr>
+        <td><b>
+            Net Amount:
+            </b>
+        </td>
+        <td>{{"         "}}</td>
+        <td>
+            {{=bill.net_total}}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>{{=A("Print Bill",_href=URL('gen_pdf',args=billid))}}</b></td>
+        </tr>
+</table>

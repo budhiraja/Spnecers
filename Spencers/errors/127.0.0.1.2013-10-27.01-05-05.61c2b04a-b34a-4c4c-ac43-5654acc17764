@@ -1,0 +1,385 @@
+(dp1
+S'output'
+p2
+S'missing "pass" in view'
+p3
+sS'layer'
+p4
+S'ParserContainer'
+p5
+sS'code'
+p6
+S'response.write(\'<!doctype html>\\n<html dir="ltr" lang="en" class="no-js">\\n\\n<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">\\n<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />\\n<meta name="viewport" content="width=device-width" />\\n\\n<title>sprSimple Invoice</title>\\n\\n<link rel="stylesheet" href="reset.css" media="screen" />\\n<link rel="stylesheet" href="style.css" media="screen" />\\n\\n<!-- give life to HTML5 objects in IE -->\\n<!--[if lte IE 8]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->\\n\\n<!-- js HTML class -->\\n<script>(function(H){H.className=H.className.replace(/\\\\bno-js\\\\b/,\\\'js\\\')})(document.documentElement)</script>\\n\\n</head>\\n<body>\\n<!-- begin markup -->\\n\\n\\n\\n<div id="invoice" class="new">\\n\\n\\n\\t<div class="this-is">\\n\\t\\t<strong>Invoice</strong>\\n\\t</div><!-- invoice headline -->\\n\\n\\n\\t<header id="header">\\n\\t\\t<div class="invoice-intro">\\n\\t\\t\\t<h1>The Romulan Empire</h1>\\n\\t\\t\\t<p>Building a Better Tomorrow Through Your Destruction</p>\\n\\t\\t</div>\\n\\n\\t\\t<dl class="invoice-meta">\\n\\t\\t\\t<dt class="invoice-number">Invoice #</dt>\\n\\t\\t\\t<dd>6859</dd>\\n\\t\\t\\t<dt class="invoice-date">Date of Invoice</dt>\\n\\t\\t\\t<dd>01-24-2012</dd>\\n\\t\\t\\t<dt class="invoice-due">Due Date</dt>\\n\\t\\t\\t<dd>02-10-2012</dd>\\n\\t\\t</dl>\\n\\t</header>\\n\\t<!-- e: invoice header -->\\n\\n\\n\\t<section id="parties">\\n\\n\\t\\t<div class="invoice-to">\\n\\t\\t\\t<h2>Invoice To:</h2>\\n\\t\\t\\t<div id="hcard-Hiram-Roth" class="vcard">\\n\\t\\t\\t\\t<a class="url fn" href="http://memory-alpha.org">Hiram Roth</a>\\n\\t\\t\\t\\t<div class="org">United Federation of Planets</div>\\n\\t\\t\\t\\t<a class="email" href="mailto:president.roth@ufop.uni">president.roth@ufop.uni</a>\\n\\t\\t\\t\\t\\n\\t\\t\\t\\t<div class="adr">\\n\\t\\t\\t\\t\\t<div class="street-address">2269 Elba Lane</div>\\n\\t\\t\\t\\t\\t<span class="locality">Paris</span>\\n\\t\\t\\t\\t\\t<span class="country-name">France</span>\\n\\t\\t\\t\\t</div>\\n\\n\\t\\t\\t\\t<div class="tel">888-555-2311</div>\\n\\t\\t\\t</div><!-- e: vcard -->\\n\\t\\t</div><!-- e invoice-to -->\\n\\n\\n\\t\\t<div class="invoice-from">\\n\\t\\t\\t<h2>Invoice From:</h2>\\n\\t\\t\\t<div id="hcard-Admiral-Valdore" class="vcard">\\n\\t\\t\\t\\t<a class="url fn" href="http://memory-alpha.org">Admiral Valdore</a>\\n\\t\\t\\t\\t<div class="org">Romulan Empire</div>\\n\\t\\t\\t\\t<a class="email" href="mailto:admiral.valdore@theempire.uni">admiral.valdore@theempire.uni</a>\\n\\t\\t\\t\\t<div class="adr">\\n\\t\\t\\t\\t\\t<div class="street-address">5151 Pardek Memorial Way</div>\\n\\t\\t\\t\\t\\t<span class="locality">Krocton Segment</span>\\n\\t\\t\\t\\t\\t<span class="country-name">Romulus</span>\\n\\t\\t\\t\\t</div>\\n\\n\\t\\t\\t\\t<div class="tel">000-555-9988</div>\\n\\t\\t\\t</div><!-- e: vcard -->\\n\\t\\t</div><!-- e invoice-from -->\\n\\n\\n\\t\\t<div class="invoice-status">\\n\\t\\t\\t<h3>Invoice Status</h3>\\n\\t\\t\\t<strong>Invoice is <em>Unpaid</em></strong>\\n\\t\\t</div><!-- e: invoice-status -->\\n\\n\\t</section><!-- e: invoice partis -->\\n\\n\\n\\t<section class="invoice-financials">\\n\\n\\t\\t<div class="invoice-items">\\n\\t\\t\\t<table>\\n\\t\\t\\t\\t<caption>Your Invoice</caption>\\n\\t\\t\\t\\t<thead>\\n\\t\\t\\t\\t\\t<tr>\\n\\t\\t\\t\\t\\t\\t<th>Item &amp; Description</th>\\n\\t\\t\\t\\t\\t\\t<th>Quantity</th>\\n\\t\\t\\t\\t\\t\\t<th>Unit Price</th>\\n                        <th>Sub-Total</th>\\n\\t\\t\\t\\t\\t</tr>\\n\\t\\t\\t\\t</thead>\\n\\t\\t\\t\\t<tbody>\\n                    \', escape=False)\nfor i in billitems:\n    response.write(\'\\n\\t\\t\\t\\t\\t<tr>\\n\\t\\t\\t\\t\\t\\t<th>\', escape=False)\n    response.write(i.product.item_name)\n    response.write(\'</th>\\n\\t\\t\\t\\t\\t\\t<th>\', escape=False)\n    response.write(i.quantity)\n    response.write(\'</th>\\n\\t\\t\\t\\t\\t\\t<th>\', escape=False)\n    response.write(i.product.mrp)\n    response.write(\'</th>\\n                        <th>\', escape=False)\n    response.write((i.product.mrp*i.quantity))\n    response.write(\'</th>\\n\\t\\t\\t\\t\\t</tr>\\n\\t\\t\\t\\t</tbody>\\n            </table>\\n\\t\\t</div><!-- e: invoice items -->\\n\\n\\n\\t\\t<div class="invoice-totals">\\n\\t\\t\\t<table>\\n\\t\\t\\t\\t<caption>Totals:</caption>\\n\\t\\t\\t\\t<tbody>\\n\\t\\t\\t\\t\\t<tr>\\n\\t\\t\\t\\t\\t\\t<th>Total:</th>\\n\\t\\t\\t\\t\\t\\t<td></td>\\n\\t\\t\\t\\t\\t\\t<td>\', escape=False)\n    response.write(bill.total)\n    response.write(\'</td>\\n\\t\\t\\t\\t\\t</tr>\\n\\t\\t\\t\\t\\t<tr>\\n\\t\\t\\t\\t\\t\\t<th>Tax:</th>\\n\\t\\t\\t\\t\\t\\t<td></td>\\n                        <td>\', escape=False)\n    response.write(bill.total*0.11)\n    response.write(\'</td>\\n\\t\\t\\t\\t\\t</tr>\\n\\t\\t\\t\\t\\t<tr>\\n\\t\\t\\t\\t\\t\\t<th>Grand Total:</th>\\n\\t\\t\\t\\t\\t\\t<td></td>\\n\\t\\t\\t\\t\\t\\t<td>\', escape=False)\n    response.write(bill.net_total)\n    response.write(\'</td>\\n\\t\\t\\t\\t\\t</tr>\\n\\t\\t\\t\\t</tbody>\\n\\t\\t\\t</table>\\n\\n\\t<footer id="footer">\\n\\t\\t<p>\\n\\t\\t\\tCrafted with Spencer\\\'s Retail.\\n\\t\\t</p>\\n\\t</footer>\\n\\n\\n<!-- e: invoice -->\\n\\n\\n</body>\\n</html>\\n\', escape=False)'
+p7
+sS'snapshot'
+p8
+(dp9
+S'exception'
+p10
+(dp11
+S'__module__'
+p12
+S"'gluon.rocket'"
+p13
+sS'__getslice__'
+p14
+S"<method-wrapper '__getslice__' of SocketTimeout object>"
+p15
+sS'__str__'
+p16
+S"<method-wrapper '__str__' of SocketTimeout object>"
+p17
+sS'__reduce__'
+p18
+S'<built-in method __reduce__ of SocketTimeout object>'
+p19
+sS'__dict__'
+p20
+S'{}'
+p21
+sS'__sizeof__'
+p22
+S'<built-in method __sizeof__ of SocketTimeout object>'
+p23
+sS'__weakref__'
+p24
+S'None'
+p25
+sS'__init__'
+p26
+S"<method-wrapper '__init__' of SocketTimeout object>"
+p27
+sS'__setattr__'
+p28
+S"<method-wrapper '__setattr__' of SocketTimeout object>"
+p29
+sS'__reduce_ex__'
+p30
+S'<built-in method __reduce_ex__ of SocketTimeout object>'
+p31
+sS'__new__'
+p32
+S'<built-in method __new__ of type object>'
+p33
+sS'__format__'
+p34
+S'<built-in method __format__ of SocketTimeout object>'
+p35
+sS'__class__'
+p36
+S"<class 'gluon.rocket.SocketTimeout'>"
+p37
+sS'__doc__'
+p38
+S"'Exception for when a socket times out between requests.'"
+p39
+sS'__getitem__'
+p40
+S"<method-wrapper '__getitem__' of SocketTimeout object>"
+p41
+sS'__setstate__'
+p42
+S'<built-in method __setstate__ of SocketTimeout object>'
+p43
+sS'__getattribute__'
+p44
+S"<method-wrapper '__getattribute__' of SocketTimeout object>"
+p45
+sS'args'
+p46
+S"('Socket timed out before request.',)"
+p47
+sS'__subclasshook__'
+p48
+S'<built-in method __subclasshook__ of type object>'
+p49
+sS'__unicode__'
+p50
+S'<built-in method __unicode__ of SocketTimeout object>'
+p51
+sS'__delattr__'
+p52
+S"<method-wrapper '__delattr__' of SocketTimeout object>"
+p53
+sS'__repr__'
+p54
+S"<method-wrapper '__repr__' of SocketTimeout object>"
+p55
+sS'__hash__'
+p56
+S"<method-wrapper '__hash__' of SocketTimeout object>"
+p57
+ssS'evalue'
+p58
+S'Socket timed out before request.'
+p59
+sS'frames'
+p60
+(lp61
+(dp62
+S'file'
+p63
+S'/home/brat/web2py/gluon/rocket.py'
+p64
+sS'dump'
+p65
+(dp66
+S'self'
+p67
+S'<WSGIWorker(Thread-7, started daemon -1281361088)>'
+p68
+sS'conn'
+p69
+S'<gluon.rocket.Connection object>'
+p70
+sS'self.run_app'
+p71
+S'<bound method WSGIWorker.run_app of <WSGIWorker(Thread-7, started daemon -1281361088)>>'
+p72
+ssS'lnum'
+p73
+I1337
+sS'lines'
+p74
+(dp75
+I1332
+S'            # Enter connection serve loop'
+p76
+sI1333
+S'            while True:'
+p77
+sI1334
+S'                if __debug__:'
+p78
+sI1335
+S"                    self.err_log.debug('Serving a request')"
+p79
+sI1336
+S'                try:'
+p80
+sI1337
+S'                    self.run_app(conn)'
+p81
+sI1338
+S'                except:'
+p82
+sI1339
+S'                    exc = sys.exc_info()'
+p83
+sI1340
+S'                    handled = self._handleError(*exc)'
+p84
+sI1341
+S'                    if handled:'
+p85
+ssS'call'
+p86
+S'(self=<WSGIWorker(Thread-7, started daemon -1281361088)>)'
+p87
+sS'func'
+p88
+S'run'
+p89
+sa(dp90
+g63
+S'/home/brat/web2py/gluon/rocket.py'
+p91
+sg65
+(dp92
+S'self'
+p93
+S'<WSGIWorker(Thread-7, started daemon -1281361088)>'
+p94
+sS'self.environ'
+p95
+S"{'HTTP_ACCEPT': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'HTTP_ACCEPT_ENCODING': 'gzip, deflate', 'HTTP_ACCEPT_LANGUAGE': 'en-US,en;q=0.5', 'HTTP_CONNECTION': 'keep-alive', 'HTTP_COOKIE': 'session_id_welcome=127.0.0.1-cb74e608-074e-466d-...rs=127.0.0.1-7bc75820-0689-4290-9869-e3f03a0fd3d8', 'HTTP_HOST': '127.0.0.1:8000', 'HTTP_REFERER': 'http://127.0.0.1:8000/Spencers/default/show_bill/1', 'HTTP_USER_AGENT': 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:24.0) Gecko/20100101 Firefox/24.0', 'PATH_INFO': '/Spencers/default/gen_pdf/1', 'QUERY_STRING': '', ...}"
+p96
+sS'sock_file'
+p97
+S'<socket._fileobject object>'
+p98
+sS'environ'
+p99
+S'undefined'
+p100
+sS'self.build_environ'
+p101
+S'<bound method WSGIWorker.build_environ of <WSGIWorker(Thread-7, started daemon -1281361088)>>'
+p102
+sS'conn'
+p103
+S'<gluon.rocket.Connection object>'
+p104
+ssg73
+I1830
+sg74
+(dp105
+I1825
+S'        else:'
+p106
+sI1826
+S'            sock_file = conn.makefile(BUF_SIZE)'
+p107
+sI1827
+S''
+sI1828
+S'        try:'
+p108
+sI1829
+S'            # Read the headers and build our WSGI environment'
+p109
+sI1830
+S'            self.environ = environ = self.build_environ(sock_file, conn)'
+p110
+sI1831
+S''
+sI1832
+S'            # Handle 100 Continue'
+p111
+sI1833
+S"            if environ.get('HTTP_EXPECT', '') == '100-continue':"
+p112
+sI1834
+S"                res = environ['SERVER_PROTOCOL'] + ' 100 Continue\\r\\n\\r\\n'"
+p113
+ssg86
+S'(self=<WSGIWorker(Thread-7, started daemon -1281361088)>, conn=<gluon.rocket.Connection object>)'
+p114
+sg88
+S'run_app'
+p115
+sa(dp116
+g63
+S'/home/brat/web2py/gluon/rocket.py'
+p117
+sg65
+(dp118
+S'sock_file'
+p119
+S'<socket._fileobject object>'
+p120
+sS'self.read_request_line'
+p121
+S'<bound method WSGIWorker.read_request_line of <WSGIWorker(Thread-7, started daemon -1281361088)>>'
+p122
+sS'self'
+p123
+S'<WSGIWorker(Thread-7, started daemon -1281361088)>'
+p124
+sS'request'
+p125
+g100
+ssg73
+I1650
+sg74
+(dp126
+I1645
+S'                                      "wsgiorg.futures": executor.futures})'
+p127
+sI1646
+S''
+sI1647
+S'    def build_environ(self, sock_file, conn):'
+p128
+sI1648
+S'        """ Build the execution environment. """'
+p129
+sI1649
+S'        # Grab the request line'
+p130
+sI1650
+S'        request = self.read_request_line(sock_file)'
+p131
+sI1651
+S''
+sI1652
+S'        # Copy the Base Environment'
+p132
+sI1653
+S'        environ = self.base_environ.copy()'
+p133
+sI1654
+S''
+ssg86
+S'(self=<WSGIWorker(Thread-7, started daemon -1281361088)>, sock_file=<socket._fileobject object>, conn=<gluon.rocket.Connection object>)'
+p134
+sg88
+S'build_environ'
+p135
+sa(dp136
+g63
+S'/home/brat/web2py/gluon/rocket.py'
+p137
+sg65
+(dp138
+S'global SocketTimeout'
+p139
+S"<class 'gluon.rocket.SocketTimeout'>"
+p140
+ssg73
+I1401
+sg74
+(dp141
+I1396
+S''
+sI1397
+S'                d = sock_file.readline()'
+p142
+sI1398
+S'                if PY3K:'
+p143
+sI1399
+S"                    d = d.decode('ISO-8859-1')"
+p144
+sI1400
+S'        except socket.timeout:'
+p145
+sI1401
+S"            raise SocketTimeout('Socket timed out before request.')"
+p146
+sI1402
+S'        except TypeError:'
+p147
+sI1403
+S'            raise SocketClosed('
+p148
+sI1404
+S"                'SSL bug caused closure of socket.  See '"
+p149
+sI1405
+S'                \'"https://groups.google.com/d/topic/web2py/P_Gw0JxWzCs".\')'
+p150
+ssg86
+S'(self=<WSGIWorker(Thread-7, started daemon -1281361088)>, sock_file=<socket._fileobject object>)'
+p151
+sg88
+S'read_request_line'
+p152
+sasS'pyver'
+p153
+S'Python 2.7.3: /usr/bin/python (prefix: /usr)'
+p154
+sS'etype'
+p155
+S"<class 'gluon.rocket.SocketTimeout'>"
+p156
+sS'date'
+p157
+S'Sun Oct 27 01:05:05 2013'
+p158
+sS'locals'
+p159
+(dp160
+S'sock_file'
+p161
+S'<socket._fileobject object>'
+p162
+sS'self'
+p163
+S'<WSGIWorker(Thread-7, started daemon -1281361088)>'
+p164
+sssS'traceback'
+p165
+S'Traceback (most recent call last):\n  File "/home/brat/web2py/gluon/rocket.py", line 1337, in run\n    self.run_app(conn)\n  File "/home/brat/web2py/gluon/rocket.py", line 1830, in run_app\n    self.environ = environ = self.build_environ(sock_file, conn)\n  File "/home/brat/web2py/gluon/rocket.py", line 1650, in build_environ\n    request = self.read_request_line(sock_file)\n  File "/home/brat/web2py/gluon/rocket.py", line 1401, in read_request_line\n    raise SocketTimeout(\'Socket timed out before request.\')\nSocketTimeout: Socket timed out before request.\n'
+p166
+s.

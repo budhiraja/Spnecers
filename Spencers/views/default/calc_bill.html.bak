@@ -1,0 +1,4 @@
+{{extend 'layout.html'}}
+<h1>This is the default/calc_bill.html template</h1>
+
+{{print total}}
